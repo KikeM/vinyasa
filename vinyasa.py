@@ -1,6 +1,5 @@
 import functools
 import hashlib
-import inspect
 import json
 import pickle
 import time
@@ -39,13 +38,24 @@ def save_history(scripts) -> None:
 
 
 def cache(func):
+    """Cache the results of a function.
+
+    The bytecode caching mechanism in vinyasa tracks changes
+    in the operational structure and logic of functions,
+    rather than variable values or simple text alterations.
+
+    This means that if you change the value of a variable,
+    or add a print statement, the function will still be
+    cached. However, if you change the order of statements,
+    or add a new statement, the function will be re-run.
+    """
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         # Get the source code of the function
         # func_source = inspect.getsource(func)
-        # key_data = f"{func.__name__}{args}{kwargs}{func_source}"
-
-        key_data = f"{func.__name__}{args}{kwargs}"
+        bytecode = func.__code__.co_code
+        key_data = f"{func.__name__}{args}{kwargs}{bytecode}"
         key = hashlib.sha256(key_data.encode()).hexdigest()
         cache_file = cache_dir / f"{key}.pkl"
 
@@ -132,6 +142,14 @@ def history(
                 print(f"{entry['timestamp']}: {cli_call}")
     else:
         print("No history available.")
+
+
+@app.command(help="Clear all cached function results.")
+def clear():
+    print("Clearing cache...")
+    for cache_file in cache_dir.glob("*.pkl"):
+        cache_file.unlink()
+    print("Cache cleared.")
 
 
 if __name__ == "__main__":
