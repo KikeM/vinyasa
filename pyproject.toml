@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vinyasa"
+version = "2023.11.22"
+authors = [{name="Enrique M. Valbuena", email="enrique.millanvalbuena@gmail.com"}]
+readme = "README.md"
+requires-python = ">=3.6"
+dependencies = ["rich", "typer"]
+license = {file = "LICENSE"}
+description = "Vinyasa: A streamlined CLI for orchestrating and managing sequential script execution with historical tracking and caching."
+
+
+[project.scripts]
+vinyasa = "vinyasa:app"
