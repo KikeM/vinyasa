@@ -1,6 +1,14 @@
 # Vinyasa CLI
 
-Vinyasa is a Python-based command-line interface (CLI) tool designed to streamline the execution of multiple scripts in sequence, with added features for caching and history tracking.
+Vinyasa is a Python-based command-line interface (CLI) tool designed to streamline 
+the execution of multiple scripts in sequence (like a pipeline), 
+with added features for caching and pipeline history tracking.
+
+<p align="center">
+  <img src="cover.png" width="250"/>
+</p>
+
+
 
 ## Features
 
