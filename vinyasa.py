@@ -11,6 +11,7 @@ import typer
 from rich import print
 
 CACHE = "vinyasa"
+GLOBAL_CONTEXT = {}
 
 app = typer.Typer()
 cache_dir = Path(gettempdir(), CACHE)
@@ -54,7 +55,7 @@ def run_script(script: str):
     with open(script_path) as f:
         script_str = "\n".join(f.readlines())
         code = compile(script_str, script_path.name, "exec")
-        exec(code)
+        exec(code, GLOBAL_CONTEXT)
 
 
 @app.command()
