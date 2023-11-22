@@ -115,4 +115,4 @@ a=25
 
 ## Contributing
 
-Contributions to Vinyasa are welcome! Please read our contributing guidelines for details on how to submit contributions.
+Contributions to Vinyasa are welcome! Open an issue and let's discuss it there! 🤟
