@@ -38,9 +38,13 @@ def save_history(scripts) -> None:
 
 
 def cache(func):
-    """Cache the results of a function.
+    """Cache the results of a function, based on its arguments and bytecode.
 
-    The bytecode caching mechanism in vinyasa tracks changes
+    The arguments need to have a valid `__repr__` method.
+
+    Notes
+    -----
+    The bytecode caching mechanism tracks changes
     in the operational structure and logic of functions,
     rather than variable values or simple text alterations.
 
@@ -52,8 +56,6 @@ def cache(func):
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        # Get the source code of the function
-        # func_source = inspect.getsource(func)
         bytecode = func.__code__.co_code
         key_data = f"{func.__name__}{args}{kwargs}{bytecode}"
         key = hashlib.sha256(key_data.encode()).hexdigest()
@@ -137,14 +139,6 @@ def history(
         return
 
     if unique:
-        # unique_runs = set()
-        # unique_data = []
-        # for entry in history_data:
-        #     run_sequence = "vinyasa run" + " ".join(entry["scripts"])
-        #     if run_sequence not in unique_runs:
-        #         unique_runs.add(run_sequence)
-        #         unique_data.append(entry)
-
         unique_runs = set(
             [
                 "vinyasa run " + " ".join(entry["scripts"])

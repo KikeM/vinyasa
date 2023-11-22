@@ -76,6 +76,44 @@ Clear all cached function results:
 vinyasa clear
 ```
 
+## Examples
+Using the scripts in the `examples` directory, we can see how `vinyasa` and the cache work.
+
+First, we run the scripts `first_slow_operation.py` and `reusing_results_from_previous_steps.py`:
+```
+(.venv) $ vinyasa run examples/first_slow_operation.py examples/reusing_results_from_previous_steps.py 
+```
+
+We can see that the first script takes a long time to run, but the second script runs very quickly.
+```
+I am a script that takes a long time to run! Please cache me!
+Loading data...
+Data loaded!
+5
+I am a script that reuses the results from previous steps!
+a=5
+a=25
+(pipeline) Execution time: 5.01 seconds (0.08 minutes)
+```
+
+Now, let's run the same scripts again:
+```
+(.venv) $ vinyasa run examples/first_slow_operation.py examples/reusing_results_from_previous_steps.py
+```
+
+This time, we can see that the first script runs very quickly, since the results are cached.
+```
+(.venv) $ vinyasa run examples/first_slow_operation.py examples/reusing_results_from_previous_steps.py 
+I am a script that takes a long time to run! Please cache me!
+Reading from cache: /tmp/vinyasa/012a44b6baab9d52fd622fe540194daa2f9d9744fb71f16b685ff1a51381c0d3.pkl for load_data
+5
+I am a script that reuses the results from previous steps!
+a=5
+a=25
+
+(pipeline) Execution time: 0.00 seconds (0.00 minutes)
+```
+
 ## Contributing
 
 Contributions to Vinyasa are welcome! Please read our contributing guidelines for details on how to submit contributions.
