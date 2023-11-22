@@ -18,16 +18,19 @@ cache_dir = Path(gettempdir(), CACHE)
 cache_dir.mkdir(exist_ok=True)
 
 
-def cache_function(func):
+def cache(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         # Get the source code of the function
-        func_source = inspect.getsource(func)
-        key_data = f"{func.__name__}{args}{kwargs}{func_source}"
+        # func_source = inspect.getsource(func)
+        # key_data = f"{func.__name__}{args}{kwargs}{func_source}"
+
+        key_data = f"{func.__name__}{args}{kwargs}"
         key = hashlib.sha256(key_data.encode()).hexdigest()
         cache_file = cache_dir / f"{key}.pkl"
 
         if cache_file.exists():
+            print(f"Reading from cache: {cache_file} for {func.__name__}")
             with open(cache_file, "rb") as file:
                 return pickle.load(file)
 
