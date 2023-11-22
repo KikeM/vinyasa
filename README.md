@@ -13,7 +13,8 @@ with added features for caching and pipeline history tracking.
 ## Features
 
 - **Sequential Script Execution**: Run multiple Python scripts in sequence.
-- **Caching**: Cache the results of function calls to improve efficiency. Changes in the operational structure and logic of functions will invalidate the cache.
+- **Caching**: Cache the results of function calls to improve efficiency.
+  Changes in the operational structure and logic of functions, as well as the arguments, will invalidate the cache.
 - **History Tracking**: Keep a record of script execution sequences.
 - **Clear Cache and History**: Easily clear cached data and execution history.
 
