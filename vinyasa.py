@@ -118,6 +118,9 @@ def run(
 def history(
     clear: bool = typer.Option(False, "--clear", help="Clear the history."),
     dump: str = typer.Option(None, "--dump", help="Dump history to a file."),
+    unique: bool = typer.Option(
+        False, "--unique", help="Show only unique script runs."
+    ),
 ):
     if clear:
         with open(history_file, "w") as file:
@@ -125,23 +128,48 @@ def history(
         print("History cleared.")
         return
 
-    if dump:
-        dump_path = Path(dump)
-        with open(history_file, "r") as file:
-            data = json.load(file)
-        with open(dump_path, "w") as dump_file:
-            json.dump(data, dump_file, indent=4)
-        print(f"History dumped to {dump_path}")
-        return
-
     if history_file.exists():
         with open(history_file, "r") as file:
-            data = json.load(file)
-            for entry in data:
-                cli_call = "vinyasa run " + " ".join(entry["scripts"])
-                print(f"{entry['timestamp']}: {cli_call}")
+            history_data = json.load(file)
+
     else:
         print("No history available.")
+        return
+
+    if unique:
+        # unique_runs = set()
+        # unique_data = []
+        # for entry in history_data:
+        #     run_sequence = "vinyasa run" + " ".join(entry["scripts"])
+        #     if run_sequence not in unique_runs:
+        #         unique_runs.add(run_sequence)
+        #         unique_data.append(entry)
+
+        unique_runs = set(
+            [
+                "vinyasa run " + " ".join(entry["scripts"])
+                for entry in history_data
+            ]
+        )
+
+        for entry in unique_runs:
+            print(entry)
+
+        history_data = {
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "scripts": list(unique_runs),
+        }
+
+    else:
+        for entry in history_data:
+            cli_call = "vinyasa run " + " ".join(entry["scripts"])
+            print(f"{entry['timestamp']}: {cli_call}")
+
+    if dump:
+        dump_path = Path(dump)
+        with open(dump_path, "w") as dump_file:
+            json.dump(history_data, dump_file, indent=4)
+        print(f"History dumped to {dump_path}")
 
 
 @app.command(help="Clear all cached function results.")
