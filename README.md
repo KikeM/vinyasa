@@ -18,8 +18,6 @@ with added features for caching and pipeline history tracking.
 - **History Tracking**: Keep a record of script execution sequences.
 - **Clear Cache and History**: Easily clear cached data and execution history.
 
-Certainly! Here's an additional section for the README, explaining the origin of the name and detailing the caching mechanism:
-
 ## Origin of the Name
 
 The name "Vinyasa" is inspired by the concept of Vinyasa in yoga, 
