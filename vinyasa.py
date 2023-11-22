@@ -1,6 +1,7 @@
 import functools
 import hashlib
 import inspect
+import json
 import pickle
 import time
 import warnings
@@ -13,9 +14,28 @@ from rich import print
 CACHE = "vinyasa"
 GLOBAL_CONTEXT = {}
 
-app = typer.Typer()
+app = typer.Typer(name="vinyasa", no_args_is_help=True, help="Vinyasa CLI")
 cache_dir = Path(gettempdir(), CACHE)
 cache_dir.mkdir(exist_ok=True)
+
+history_dir = Path.home() / ".vinyasa"
+history_dir.mkdir(exist_ok=True)
+history_file = history_dir / "history.json"
+
+
+def save_history(scripts) -> None:
+    history_data = {
+        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "scripts": scripts,
+    }
+    if history_file.exists():
+        with open(history_file, "r") as file:
+            data = json.load(file)
+    else:
+        data = []
+    data.append(history_data)
+    with open(history_file, "w") as file:
+        json.dump(data, file, indent=4)
 
 
 def cache(func):
@@ -42,14 +62,14 @@ def cache(func):
     return wrapper
 
 
-def resolve_script_path(script):
+def resolve_script_path(script) -> Path:
     script_path = Path(script)
     if not script_path.is_absolute():
         script_path = Path.cwd() / script_path
     return script_path
 
 
-def run_script(script: str):
+def run_script(script: str) -> None:
     script_path = resolve_script_path(script)
     if not script_path.exists():
         print(f"Script not found: {script}")
@@ -61,11 +81,17 @@ def run_script(script: str):
         exec(code, GLOBAL_CONTEXT)
 
 
-@app.command()
+@app.command(
+    help="""Run a sequence of scripts. 
+    Example: vinyasa run load_data.py preprocess.py train.py
+    """,
+    no_args_is_help=True,
+)
 def run(
     scripts: list[str] = typer.Argument(..., help="List of scripts to run")
 ):
     warnings.filterwarnings("ignore")
+    save_history(scripts)
 
     start = time.time()
     for script in scripts:
@@ -76,6 +102,36 @@ def run(
     print(
         f"\n(pipeline) Execution time: {T:.2f} seconds ({T / 60:.2f} minutes)"
     )
+
+
+@app.command(help="Show history of scripts run.")
+def history(
+    clear: bool = typer.Option(False, "--clear", help="Clear the history."),
+    dump: str = typer.Option(None, "--dump", help="Dump history to a file."),
+):
+    if clear:
+        with open(history_file, "w") as file:
+            json.dump([], file)
+        print("History cleared.")
+        return
+
+    if dump:
+        dump_path = Path(dump)
+        with open(history_file, "r") as file:
+            data = json.load(file)
+        with open(dump_path, "w") as dump_file:
+            json.dump(data, dump_file, indent=4)
+        print(f"History dumped to {dump_path}")
+        return
+
+    if history_file.exists():
+        with open(history_file, "r") as file:
+            data = json.load(file)
+            for entry in data:
+                cli_call = "vinyasa run " + " ".join(entry["scripts"])
+                print(f"{entry['timestamp']}: {cli_call}")
+    else:
+        print("No history available.")
 
 
 if __name__ == "__main__":
