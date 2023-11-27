@@ -113,6 +113,51 @@ a=25
 (pipeline) Execution time: 0.00 seconds (0.00 minutes)
 ```
 
+## The Original Script
+`vinyasa` was for a couple of weeks a simple python script I invoked on every run, 
+followed by the names of the scripts I wanted to run.
+
+I leave it here for historical reasons, and in case you want to branch off 
+from a simple script and adjust it to your needs.
+```python
+import os
+import sys
+import time
+import warnings
+
+from rich import print
+from rich.progress import track
+
+warnings.filterwarnings("ignore")
+
+print("")
+args = sys.argv
+scripts = args[1:]
+print(f"pipeline: {scripts = }")
+
+DEBUG = os.environ.get("DEBUG", False)
+DEBUG = True
+
+if DEBUG:
+    iterable = scripts
+else:
+    iterable = track(scripts, description="Running scripts ...")
+# Time execution
+
+start = time.time()
+for script in iterable:
+    with open(script) as f:
+        script_str = "\n".join(f.readlines())
+        code = compile(script_str, script, "exec")
+        # TODO: Handle code errors
+        exec(code)
+end = time.time()
+
+T = end - start
+print(f"\n(pipeline) Execution time: {T:.2f} seconds ({T / 60:.2f} minutes)")
+```
+
+
 ## Contributing
 
 Contributions to Vinyasa are welcome! Open an issue and let's discuss it there! 🤟
