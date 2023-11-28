@@ -141,18 +141,7 @@ def run(
     save_history(scripts)
 
     if full_script:
-        # Add .py extension if not present
-        if not full_script.endswith(".py"):
-            full_script += ".py"
-
-        print(f"Dumping full script to {full_script} ...")
-        full_script_path = Path(full_script)
-        with open(full_script_path, "w") as full_file:
-            for script in scripts:
-                script_path = resolve_script_path(script)
-                with open(script_path) as f:
-                    full_file.write(f.read() + "\n\n")
-        print(f"Full script dumped to {full_script_path}")
+        save_full_script(scripts=scripts, full_script=full_script)
 
     start = time.time()
     for script in scripts:

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vinyasa"
-version = "2023.11.22"
+version = "2023.11.28"
 authors = [
     { name = "Enrique M. Valbuena", email = "enrique.millanvalbuena@gmail.com" },
 ]
