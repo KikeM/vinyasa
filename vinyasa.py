@@ -62,7 +62,7 @@ def cache(func):
         cache_file = cache_dir / f"{key}.pkl"
 
         if cache_file.exists():
-            print(f"Reading from cache: {cache_file} for {func.__name__}")
+            print(f"({func.__name__}) Reading from cache: {cache_file}")
             with open(cache_file, "rb") as file:
                 return pickle.load(file)
 
