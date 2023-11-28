@@ -22,6 +22,36 @@ history_dir.mkdir(exist_ok=True)
 history_file = history_dir / "history.json"
 
 
+def save_full_script(scripts: list[str], full_script: str) -> None:
+    """Save a full script to a file.
+
+    Parameters
+    ----------
+    scripts : list[str]
+        List of scripts to run.
+    full_script : str
+        Path to save the full script to.
+
+    Notes
+    -----
+    The full script is a concatenation of all the scripts
+    in the pipeline, separated by two newlines.
+    """
+    # Add .py extension if not present
+    if not full_script.endswith(".py"):
+        full_script += ".py"
+
+    print(f"Dumping full script to {full_script} ...")
+    full_script_path = Path(full_script)
+    with open(full_script_path, "w") as full_file:
+        for script in scripts:
+            script_path = resolve_script_path(script)
+            with open(script_path) as f:
+                full_file.write(f.read() + "\n\n")
+
+    print(f"Full script dumped to {full_script_path}")
+
+
 def save_history(scripts) -> None:
     history_data = {
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -100,10 +130,29 @@ def run_script(script: str) -> None:
     no_args_is_help=True,
 )
 def run(
-    scripts: list[str] = typer.Argument(..., help="List of scripts to run")
+    scripts: list[str] = typer.Argument(..., help="List of scripts to run"),
+    full_script: str = typer.Option(
+        None,
+        "--full-script",
+        help="Dump full script to a file.",
+    ),
 ):
     warnings.filterwarnings("ignore")
     save_history(scripts)
+
+    if full_script:
+        # Add .py extension if not present
+        if not full_script.endswith(".py"):
+            full_script += ".py"
+
+        print(f"Dumping full script to {full_script} ...")
+        full_script_path = Path(full_script)
+        with open(full_script_path, "w") as full_file:
+            for script in scripts:
+                script_path = resolve_script_path(script)
+                with open(script_path) as f:
+                    full_file.write(f.read() + "\n\n")
+        print(f"Full script dumped to {full_script_path}")
 
     start = time.time()
     for script in scripts:
